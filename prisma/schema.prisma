@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relações
+  guilds        GuildMember[]
+  votes         Vote[]
+  createdGuilds Guild[]       @relation("GuildAdmin")
+
+  @@map("users")
+}
+
+model Guild {
+  id          String   @id @default(cuid())
+  name        String
+  adminId     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relações
+  admin       User          @relation("GuildAdmin", fields: [adminId], references: [id])
+  members     GuildMember[]
+  votingSessions VotingSession[]
+
+  @@map("guilds")
+}
+
+
+model GuildMember {
+  id        String   @id @default(cuid())
+  userId    String
+  guildId   String
+  status    String   @default("pending") // "pending", "accepted", "rejected"
+  joinedAt  DateTime @default(now())
+
+  // Relações
+  user      User     @relation(fields: [userId], references: [id])
+  guild     Guild    @relation(fields: [guildId], references: [id])
+
+  @@unique([userId, guildId])
+  @@map("guild_members")
+}
+
+model RpgSystem {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  externalId  String?  @unique // ID da API externa
+  createdAt   DateTime @default(now())
+
+  // Relações
+  votingSessions VotingSession[]
+
+  @@map("rpg_systems")
+}
+
+model VotingSession {
+  id          String    @id @default(cuid())
+  guildId     String
+  systemId    String
+  status      String    @default("open") // "open", "closed"
+  deadline    DateTime?
+  createdAt   DateTime  @default(now())
+  closedAt    DateTime?
+
+  // Relações
+  guild       Guild     @relation(fields: [guildId], references: [id])
+  system      RpgSystem @relation(fields: [systemId], references: [id])
+  votes       Vote[]
+
+  @@map("voting_sessions")
+}
+
+model Category {
+  id          String @id @default(cuid())
+  name        String @unique
+  description String?
+
+  // Relações
+  votes       Vote[]
+
+  @@map("categories")
+}
+
+model Vote {
+  id              String   @id @default(cuid())
+  userId          String
+  votingSessionId String
+  categoryId      String
+  rating          Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relações
+  user            User          @relation(fields: [userId], references: [id])
+  votingSession   VotingSession @relation(fields: [votingSessionId], references: [id])
+  category        Category      @relation(fields: [categoryId], references: [id])
+
+  @@unique([userId, votingSessionId, categoryId])
+  @@map("votes")
+}
