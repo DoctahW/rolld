@@ -25,6 +25,7 @@
 *.pem
 Thumbs.db
 *.swp
+.zed/
 
 # debug
 npm-debug.log*
@@ -46,4 +47,4 @@ next-env.d.ts
 
 # Prisma
 node_modules/.prisma/
-/src/generated/prisma
+/src/generated
