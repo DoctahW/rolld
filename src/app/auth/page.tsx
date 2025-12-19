@@ -2,13 +2,11 @@
 
 import { useState, FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 
 type TabType = "login" | "register";
 
 export default function AuthPage() {
-  const router = useRouter();
   const [activeTab, setActiveTab] = useState<TabType>("login");
   const [loading, setLoading] = useState(false);
 
@@ -46,16 +44,17 @@ export default function AuthPage() {
       localStorage.setItem("token", result.token);
       localStorage.setItem("user", JSON.stringify(result.user));
 
+      document.cookie = `token=${result.token}; path=/; max-age=${60 * 60 * 24 * 7}`;
+
       const successMessage =
         activeTab === "login"
           ? "Login realizado com sucesso!"
           : "Conta criada com sucesso!";
 
       toast.success(successMessage);
-      router.push("/dashboard");
-    } catch (error) {
+      window.location.href = "/dashboard";
+    } catch {
       toast.error("Erro ao conectar com o servidor");
-      console.error(error);
     } finally {
       setLoading(false);
     }
