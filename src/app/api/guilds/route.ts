@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/db/prisma";
 import { verifyToken } from "@/lib/auth/jwt";
+import { getUserGuilds } from "@/lib/guilds/queries";
 
 export async function GET(request: NextRequest) {
   try {
@@ -12,50 +13,9 @@ export async function GET(request: NextRequest) {
     }
 
     const payload = verifyToken(token);
-    const guilds = await prisma.guild.findMany({
-      where: {
-        OR: [
-          { adminId: payload.userId },
-          {
-            members: {
-              some: {
-                userId: payload.userId,
-                status: "accepted",
-              },
-            },
-          },
-        ],
-      },
-      include: {
-        admin: {
-          select: {
-            id: true,
-            name: true,
-            email: true,
-          },
-        },
-        members: {
-          where: {
-            status: "accepted",
-          },
-          include: {
-            user: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
-        },
-        _count: {
-          select: {
-            members: true,
-            votingSessions: true,
-          },
-        },
-      },
-    });
+
+    const guilds = await getUserGuilds(payload.userId);
+
     return NextResponse.json({ guilds });
   } catch (error) {
     console.error("Erro ao listar guildas:", error);
@@ -78,6 +38,13 @@ export async function POST(request: NextRequest) {
     const payload = verifyToken(token);
     const body = await request.json();
     const { name } = body;
+
+    if (!name || name.trim().length === 0) {
+      return NextResponse.json(
+        { error: "Nome da guilda é obrigatório" },
+        { status: 400 },
+      );
+    }
 
     const guild = await prisma.guild.create({
       data: {
