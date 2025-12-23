@@ -1,41 +1,23 @@
-import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/db/prisma";
-import { verifyToken } from "@/lib/auth/jwt";
+import { NextResponse } from "next/server";
+import { withAuth, AuthenticatedRequest } from "@/lib/auth/middleware";
 import { getUserGuilds } from "@/lib/guilds/queries";
+import { prisma } from "@/lib/db/prisma";
 
-export async function GET(request: NextRequest) {
+async function getGuildsHandler(request: AuthenticatedRequest) {
   try {
-    const authHeader = request.headers.get("Authorization");
-    const token = authHeader?.replace("Bearer ", "");
-
-    if (!token) {
-      return NextResponse.json({ error: "Não autorizado!" }, { status: 401 });
-    }
-
-    const payload = verifyToken(token);
-
-    const guilds = await getUserGuilds(payload.userId);
-
+    const guilds = await getUserGuilds(request.user!.userId);
     return NextResponse.json({ guilds });
   } catch (error) {
     console.error("Erro ao listar guildas:", error);
     return NextResponse.json(
-      { error: "Erro interno do servidor!" },
+      { error: "Erro interno do servidor" },
       { status: 500 },
     );
   }
 }
 
-export async function POST(request: NextRequest) {
+async function createGuildHandler(request: AuthenticatedRequest) {
   try {
-    const authHeader = request.headers.get("Authorization");
-    const token = authHeader?.replace("Bearer ", "");
-
-    if (!token) {
-      return NextResponse.json({ error: "Não autorizado!" }, { status: 401 });
-    }
-
-    const payload = verifyToken(token);
     const body = await request.json();
     const { name } = body;
 
@@ -49,7 +31,7 @@ export async function POST(request: NextRequest) {
     const guild = await prisma.guild.create({
       data: {
         name: name.trim(),
-        adminId: payload.userId,
+        adminId: request.user!.userId,
       },
       include: {
         admin: {
@@ -64,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     await prisma.guildMember.create({
       data: {
-        userId: payload.userId,
+        userId: request.user!.userId,
         guildId: guild.id,
         status: "accepted",
       },
@@ -72,7 +54,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       {
-        message: "Guilda criada com sucesso!",
+        message: "Guilda criada com sucesso",
         guild,
       },
       { status: 201 },
@@ -80,8 +62,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Erro ao criar guilda:", error);
     return NextResponse.json(
-      { error: "Erro interno do servidor!" },
+      { error: "Erro interno do servidor" },
       { status: 500 },
     );
   }
 }
+
+export const GET = withAuth(getGuildsHandler);
+export const POST = withAuth(createGuildHandler);
