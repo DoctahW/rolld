@@ -113,7 +113,6 @@ export default function DashboardPage() {
     setMounted(true);
   }, []);
 
-  // Carregar guildas quando montar
   useEffect(() => {
     loadGuilds();
   }, []);
@@ -231,10 +230,8 @@ export default function DashboardPage() {
       <Header user={user} />
 
       <main className="mx-auto px-6 py-12" style={{ maxWidth: "950px" }}>
-        {/* Profile Header - Character Sheet Inspired */}
         <div className={`mb-16 ${mounted ? "reveal-stagger" : "opacity-0"}`}>
           <div className="flex flex-col md:flex-row gap-8 items-start">
-            {/* Avatar & Core Stats */}
             <div className="flex gap-6 items-start">
               <div className="relative group">
                 <div className="w-32 h-32 rounded border-4 border-gold/40 bg-linear-to-br from-primary-dark to-primary overflow-hidden relative">
@@ -243,14 +240,12 @@ export default function DashboardPage() {
                   </div>
                   <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                 </div>
-                {/* Corner ornaments */}
                 <div className="absolute -top-1 -left-1 w-3 h-3 border-l-2 border-t-2 border-gold" />
                 <div className="absolute -top-1 -right-1 w-3 h-3 border-r-2 border-t-2 border-gold" />
                 <div className="absolute -bottom-1 -left-1 w-3 h-3 border-l-2 border-b-2 border-gold" />
                 <div className="absolute -bottom-1 -right-1 w-3 h-3 border-r-2 border-b-2 border-gold" />
               </div>
 
-              {/* Character Stats Block */}
               <div className="space-y-3">
                 <div>
                   <h2 className="text-3xl font-rpg text-white mb-1 tracking-wide">
@@ -282,13 +277,11 @@ export default function DashboardPage() {
 
             <div className="flex-1" />
 
-            {/* Action Button */}
             <button className="border-2 border-gold/40 hover:border-gold text-gold hover:text-gold-light px-6 py-2.5 rounded font-serif font-semibold tracking-wide transition-all hover-lift bg-dark-lighter/30">
               Editar Perfil
             </button>
           </div>
 
-          {/* Ornamental Divider */}
           <div className="mt-8 flex items-center gap-3">
             <div className="flex gap-1">
               <div className="dice-pip text-gold/30" />
@@ -299,11 +292,8 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        {/* Two Column Layout */}
         <div className="flex flex-col lg:flex-row gap-8">
-          {/* Main Content */}
           <div className="w-full lg:w-[630px]">
-            {/* Favorite RPGs - Grid Gallery */}
             <section
               className={`mb-12 ${mounted ? "reveal-stagger" : "opacity-0"}`}
               style={{ animationDelay: "0.1s" }}
@@ -325,7 +315,6 @@ export default function DashboardPage() {
               </div>
             </section>
 
-            {/* Recent Reviews - Letterboxd Style */}
             <section
               className={`mb-16 ${mounted ? "reveal-stagger" : "opacity-0"}`}
               style={{ animationDelay: "0.2s" }}
@@ -361,7 +350,6 @@ export default function DashboardPage() {
           onDelete={handleDeleteGuild}
         />
 
-        {/* Activity Feed - Campaign Journal */}
         <section
           className={`pb-12 ${mounted ? "reveal-stagger" : "opacity-0"}`}
           style={{ animationDelay: "0.4s" }}
@@ -381,11 +369,9 @@ export default function DashboardPage() {
         </section>
       </main>
 
-      {/* Create Guild Modal - Parchment Style */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 animate-in fade-in duration-200">
           <div className="bg-dark border-2 border-gold/30 rounded-xl p-8 max-w-lg w-full relative guild-scroll">
-            {/* Decorative corners */}
             <div className="absolute top-2 left-2 w-4 h-4 border-l-2 border-t-2 border-gold/50" />
             <div className="absolute top-2 right-2 w-4 h-4 border-r-2 border-t-2 border-gold/50" />
             <div className="absolute bottom-2 left-2 w-4 h-4 border-l-2 border-b-2 border-gold/50" />

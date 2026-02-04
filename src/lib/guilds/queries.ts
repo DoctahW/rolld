@@ -80,6 +80,12 @@ export async function getGuildById(guildId: string) {
           },
         },
       },
+      _count: {
+        select: {
+          members: true,
+          votingSessions: true,
+        },
+      },
     },
   });
 }
