@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import Header from "@/components/Header";
 import RPGCard from "@/components/RPGCard";
 import RatingsChart from "@/components/RatingsChart";
+import { GuildsSection } from "@/components/guilds/GuildsSection";
 
 interface User {
   id: string;
@@ -347,118 +348,18 @@ export default function DashboardPage() {
           </div>
 
           {/* Right Sidebar */}
-          <aside className="w-full lg:w-[150px]">
+          <aside className="w-full lg:w-37.5">
             <RatingsChart ratings={mockRatingsDistribution} />
           </aside>
         </div>
 
-        {/* Full Width Sections */}
-        {/* Guilds Section - Quest Scrolls */}
-        <section
-          className={`mb-16 ${mounted ? "reveal-stagger" : "opacity-0"}`}
-          style={{ animationDelay: "0.3s" }}
-        >
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-rpg text-white tracking-wide flex items-center gap-2">
-              <span className="text-gold">⚔</span>
-              Minhas Guildas
-            </h2>
-            <button
-              onClick={() => setShowCreateModal(true)}
-              className="bg-gold hover:bg-gold-light text-dark px-5 py-2.5 rounded font-serif font-bold tracking-wide transition-all hover-lift flex items-center gap-2"
-            >
-              <span className="text-lg">+</span>
-              Nova Guilda
-            </button>
-          </div>
-
-          {loadingGuilds ? (
-            <div className="text-center py-16">
-              <div className="text-gold font-serif italic animate-pulse">
-                Carregando guildas...
-              </div>
-            </div>
-          ) : guilds.length === 0 ? (
-            <div className="border-2 border-dashed border-gold/20 rounded-lg p-16 text-center">
-              <div className="text-7xl mb-6 opacity-50">🏰</div>
-              <h3 className="text-2xl font-rpg text-white mb-3">
-                Forme sua primeira Guilda
-              </h3>
-              <p className="text-gray-400 font-serif mb-8 max-w-md mx-auto leading-relaxed">
-                Convide seus amigos para avaliar sistemas de RPG juntos e
-                descobrir qual é o favorito da mesa
-              </p>
-              <button
-                onClick={() => setShowCreateModal(true)}
-                className="bg-gold hover:bg-gold-light text-dark px-8 py-3 rounded font-serif font-bold tracking-wide transition-all hover-lift"
-              >
-                Criar Primeira Guilda
-              </button>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {guilds.map((guild, index) => (
-                <div
-                  key={guild.id}
-                  className="guild-scroll border border-gold/15 hover:border-gold/40 rounded-lg p-6 transition-all hover-lift group"
-                  style={{ animationDelay: `${0.35 + index * 0.05}s` }}
-                >
-                  <div className="flex items-start justify-between mb-5">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <h3 className="text-xl font-rpg text-white group-hover:text-gold transition-colors tracking-wide">
-                          {guild.name}
-                        </h3>
-                        {guild.admin.id === user.id && (
-                          <span className="bg-gold text-dark text-xs font-serif font-bold px-2 py-1 rounded">
-                            GM
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 font-serif">
-                        {guild._count.members}{" "}
-                        {guild._count.members === 1 ? "membro" : "membros"}
-                      </p>
-                    </div>
-                    <div className="w-14 h-14 rounded border-2 border-gold/30 bg-linear-to-br from-primary to-primary-light flex items-center justify-center text-3xl group-hover:scale-110 transition-transform">
-                      🏰
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gold/10 pt-5 flex justify-between items-center">
-                    <div>
-                      <p className="text-xs text-gray-500 uppercase tracking-wider font-serif mb-1">
-                        Votações Ativas
-                      </p>
-                      <p className="text-3xl font-rpg text-gold">
-                        {guild._count.votingSessions}
-                      </p>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => router.push(`/guilds/${guild.id}`)}
-                        className="bg-primary hover:bg-primary-light text-white px-5 py-2.5 rounded font-serif font-semibold tracking-wide transition-colors"
-                      >
-                        Entrar
-                      </button>
-                      {guild.admin.id === user.id && (
-                        <button
-                          onClick={() =>
-                            handleDeleteGuild(guild.id, guild.name)
-                          }
-                          className="bg-dark-lighter hover:bg-red-900/30 border border-red-900/40 hover:border-red-600/60 text-red-400 px-3 py-2.5 rounded transition-all"
-                          title="Deletar guilda"
-                        >
-                          🗑️
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
+        <GuildsSection
+          guilds={guilds}
+          loading={loadingGuilds}
+          currentUserId={user.id}
+          onCreateClick={() => setShowCreateModal(true)}
+          onDelete={handleDeleteGuild}
+        />
 
         {/* Activity Feed - Campaign Journal */}
         <section
